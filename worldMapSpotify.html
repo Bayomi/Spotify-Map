@@ -1,0 +1,561 @@
+
+<html>
+<head>
+	<!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Lato:900' rel='stylesheet' type='text/css'> -->
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="http://code.jquery.com/jquery-2.0.0.js"></script>
+
+<style>
+body { font-family: "Open Sans"; } 
+div { margin: 30px; }
+svg { 
+  border: solid black 1px; 
+  margin-top: 0px;
+}
+
+#map{
+  margin-top: 15px;
+}
+
+#album{
+  margin: 0px;
+  padding: 0px;
+  position: relative;
+  width:300px;
+  height: 300px;
+  float: left;
+  -webkit-backface-visibility: hidden;
+}
+
+#playlist{
+  margin: 0px;
+  padding: 0px;
+  position: relative;
+  width:300px;
+  height: 380px;
+  float: right;
+  -webkit-backface-visibility: hidden;
+  border: none;
+}
+
+#playlistDiv{
+  margin: 0px;
+  padding: 0px;
+}
+
+#albumDiv{
+  margin: 0px;
+  padding: 0px;
+}
+
+h1{
+  font-family: 'Open Sans', sans-serif;
+  text-align: center;
+  font-size: 40px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+
+p{
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+  font-size: 17px;
+}
+
+#key{
+  margin-top: 7px;
+  margin-bottom: 0px;
+  padding: 0px;
+}
+
+#title{
+  background: rgba(255,255,255,0.6);
+  border-radius: 30px;
+}
+
+</style>
+<meta charset="UTF-8">
+  <title>Spotify Top Tracks by Country</title> 
+  <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src = "js/ajax.js"></script>
+</head>
+<body>
+  <h1>Spotify Top Tracks by Country</h1>
+  <div id = "key"><p>Click any green country to see playlist information and relevant album covers!</p></div>
+<div id="map"></div>
+
+<script>
+var countryData=[
+  [-1,"Northern Cyprus"  ],
+  [-2,"Kosovo"  ],
+  [-3,"Somaliland"  ],
+  [4,"Afghanistan"  ],
+  [8,"Albania"  ],
+  [10,"Antarctica"  ],
+  [12,"Algeria"  ],
+  [16,"American Samoa"  ],
+  [20,"Andorra"  ],
+  [24,"Angola"  ],
+  [28,"Antigua and Barbuda"  ],
+  [31,"Azerbaijan"  ],
+  [32,"Argentina"  ],
+  [36,"Australia"  ],
+  [40,"Austria"  ],
+  [44,"Bahamas"  ],
+  [48,"Bahrain"  ],
+  [50,"Bangladesh"  ],
+  [51,"Armenia"  ],
+  [52,"Barbados"  ],
+  [56,"Belgium"  ],
+  [60,"Bermuda"  ],
+  [64,"Bhutan"  ],
+  [68,"Bolivia"  ],
+  [70,"Bosnia and Herzegovina"  ],
+  [72,"Botswana"  ],
+  [74,"Bouvet Island"  ],
+  [76,"Brazil"  ],
+  [84,"Belize"  ],
+  [86,"British Indian Ocean Territory"  ],
+  [90,"Solomon Islands"  ],
+  [92,"Virgin Islands, British"  ],
+  [96,"Brunei Darussalam"  ],
+  [100,"Bulgaria"  ],
+  [104,"Myanmar"  ],
+  [108,"Burundi"  ],
+  [112,"Belarus"  ],
+  [116,"Cambodia"  ],
+  [120,"Cameroon"  ],
+  [124,"Canada"  ],
+  [132,"Cape Verde"  ],
+  [136,"Cayman Islands"  ],
+  [140,"Central African Republic"  ],
+  [144,"Sri Lanka"  ],
+  [148,"Chad"  ],
+  [152,"Chile"  ],
+  [156,"China"  ],
+  [158,"Taiwan"  ],
+  [162,"Christmas Island"  ],
+  [166,"Cocos (Keeling) Islands"  ],
+  [170,"Colombia"  ],
+  [174,"Comoros"  ],
+  [175,"Mayotte"  ],
+  [178,"Congo"  ],
+  [180,"Congo, the Democratic Republic of the"  ],
+  [184,"Cook Islands"  ],
+  [188,"Costa Rica"  ],
+  [191,"Croatia"  ],
+  [192,"Cuba"  ],
+  [196,"Cyprus"  ],
+  [203,"Czech"  ],
+  [204,"Benin"  ],
+  [208,"Denmark"  ],
+  [212,"Dominica"  ],
+  [214,"Dominican Republic"  ],
+  [218,"Ecuador"  ],
+  [222,"El Salvador"  ],
+  [226,"Equatorial Guinea"  ],
+  [231,"Ethiopia"  ],
+  [232,"Eritrea"  ],
+  [233,"Estonia"  ],
+  [234,"Faroe Islands"  ],
+  [238,"Falkland Islands (Malvinas)"  ],
+  [239,"South Georgia and the South Sandwich Islands"  ],
+  [242,"Fiji"  ],
+  [246,"Finland"  ],
+  [248,"_land Islands"  ],
+  [250,"France"  ],
+  [254,"French Guiana"  ],
+  [258,"French Polynesia"  ],
+  [260,"French Southern Territories"  ],
+  [262,"Djibouti"  ],
+  [266,"Gabon"  ],
+  [268,"Georgia"  ],
+  [270,"Gambia"  ],
+  [275,"Palestinian Territory, Occupied"  ],
+  [276,"Germany"  ],
+  [288,"Ghana"  ],
+  [292,"Gibraltar"  ],
+  [296,"Kiribati"  ],
+  [300,"Greece"  ],
+  [304,"Greenland"  ],
+  [308,"Grenada"  ],
+  [312,"Guadeloupe"  ],
+  [316,"Guam"  ],
+  [320,"Guatemala"  ],
+  [324,"Guinea"  ],
+  [328,"Guyana"  ],
+  [332,"Haiti"  ],
+  [334,"Heard Island and McDonald Islands"  ],
+  [336,"Holy See (Vatican City State)"  ],
+  [340,"Honduras"  ],
+  [344,"Hong Kong"  ],
+  [348,"Hungary"  ],
+  [352,"Iceland"  ],
+  [356,"India"  ],
+  [360,"Indonesia"  ],
+  [364,"Iran, Islamic Republic of"  ],
+  [368,"Iraq"  ],
+  [372,"Ireland"  ],
+  [376,"Israel"  ],
+  [380,"Italy"  ],
+  [384,"C_te d'Ivoire"  ],
+  [388,"Jamaica"  ],
+  [392,"Japan"  ],
+  [398,"Kazakhstan"  ],
+  [400,"Jordan"  ],
+  [404,"Kenya"  ],
+  [408,"Korea, Democratic People's Republic of"  ],
+  [410,"Korea, Republic of"  ],
+  [414,"Kuwait"  ],
+  [417,"Kyrgyzstan"  ],
+  [418,"Lao People's Democratic Republic"  ],
+  [422,"Lebanon"  ],
+  [426,"Lesotho"  ],
+  [428,"Latvia"  ],
+  [430,"Liberia"  ],
+  [434,"Libya"  ],
+  [438,"Liechtenstein"  ],
+  [440,"Lithuania"  ],
+  [442,"Luxembourg"  ],
+  [446,"Macao"  ],
+  [450,"Madagascar"  ],
+  [454,"Malawi"  ],
+  [458,"Malaysia"  ],
+  [462,"Maldives"  ],
+  [466,"Mali"  ],
+  [470,"Malta"  ],
+  [474,"Martinique"  ],
+  [478,"Mauritania"  ],
+  [480,"Mauritius"  ],
+  [484,"Mexico"  ],
+  [492,"Monaco"  ],
+  [496,"Mongolia"  ],
+  [498,"Moldova, Republic of"  ],
+  [499,"Montenegro"  ],
+  [500,"Montserrat"  ],
+  [504,"Morocco"  ],
+  [508,"Mozambique"  ],
+  [512,"Oman"  ],
+  [516,"Namibia"  ],
+  [520,"Nauru"  ],
+  [524,"Nepal"  ],
+  [528,"Netherlands"  ],
+  [531,"Cura_ao"  ],
+  [533,"Aruba"  ],
+  [534,"Sint Maarten (Dutch part)"  ],
+  [535,"Bonaire, Sint Eustatius and Saba"  ],
+  [540,"New Caledonia"  ],
+  [548,"Vanuatu"  ],
+  [554,"New Zealand"  ],
+  [558,"Nicaragua"  ],
+  [562,"Niger"  ],
+  [566,"Nigeria"  ],
+  [570,"Niue"  ],
+  [574,"Norfolk Island"  ],
+  [578,"Norway"  ],
+  [580,"Northern Mariana Islands"  ],
+  [581,"United States Minor Outlying Islands"  ],
+  [583,"Micronesia, Federated States of"  ],
+  [584,"Marshall Islands"  ],
+  [585,"Palau"  ],
+  [586,"Pakistan"  ],
+  [591,"Panama"  ],
+  [598,"Papua New Guinea"  ],
+  [600,"Paraguay"  ],
+  [604,"Peru"  ],
+  [608,"Philippines"  ],
+  [612,"Pitcairn"  ],
+  [616,"Poland"  ],
+  [620,"Portugal"  ],
+  [624,"Guinea-Bissau"  ],
+  [626,"Timor-Leste"  ],
+  [630,"Puerto Rico"  ],
+  [634,"Qatar"  ],
+  [638,"R��union"  ],
+  [642,"Romania"  ],
+  [643,"Russian Federation"  ],
+  [646,"Rwanda"  ],
+  [652,"Saint Barth��lemy"  ],
+  [654,"Saint Helena, Ascension and Tristan da Cunha"  ],
+  [659,"Saint Kitts and Nevis"  ],
+  [660,"Anguilla"  ],
+  [662,"Saint Lucia"  ],
+  [663,"Saint Martin (French part)"  ],
+  [666,"Saint Pierre and Miquelon"  ],
+  [670,"Saint Vincent and the Grenadines"  ],
+  [674,"San Marino"  ],
+  [678,"Sao Tome and Principe"  ],
+  [682,"Saudi Arabia"  ],
+  [686,"Senegal"  ],
+  [688,"Serbia"  ],
+  [690,"Seychelles"  ],
+  [694,"Sierra Leone"  ],
+  [702,"Singapore"  ],
+  [703,"Slovakia"  ],
+  [704,"Viet Nam"  ],
+  [705,"Slovenia"  ],
+  [706,"Somalia"  ],
+  [710,"South Africa"  ],
+  [716,"Zimbabwe"  ],
+  [724,"Spain"  ],
+  [728,"South Sudan"  ],
+  [729,"Sudan"  ],
+  [732,"Western Sahara"  ],
+  [740,"Suriname"  ],
+  [744,"Svalbard and Jan Mayen"  ],
+  [748,"Swaziland"  ],
+  [752,"Sweden"  ],
+  [756,"Switzerland"  ],
+  [760,"Syrian Arab Republic"  ],
+  [762,"Tajikistan"  ],
+  [764,"Thailand"  ],
+  [768,"Togo"  ],
+  [772,"Tokelau"  ],
+  [776,"Tonga"  ],
+  [780,"Trinidad and Tobago"  ],
+  [784,"United Arab Emirates"  ],
+  [788,"Tunisia"  ],
+  [792,"Turkey"  ],
+  [795,"Turkmenistan"  ],
+  [796,"Turks and Caicos Islands"  ],
+  [798,"Tuvalu"  ],
+  [800,"Uganda"  ],
+  [804,"Ukraine"  ],
+  [807,"Macedonia, the former Yugoslav Republic of"  ],
+  [818,"Egypt"  ],
+  [826,"United Kingdom"  ],
+  [831,"Guernsey"  ],
+  [832,"Jersey"  ],
+  [833,"Isle of Man"  ],
+  [834,"Tanzania, United Republic of"  ],
+  [840,"United States"  ],
+  [850,"Virgin Islands, U.S."  ],
+  [854,"Burkina Faso"  ],
+  [858,"Uruguay"  ],
+  [860,"Uzbekistan"  ],
+  [862,"Venezuela, Bolivarian Republic of"  ],
+  [876,"Wallis and Futuna"  ],
+  [882,"Samoa"],
+  [887,"Yemen"]];
+
+var countryIndex = [];
+var countryName = [];
+var getnodes;
+var albumarray = [];
+var allAlbums = [];
+var currentCountry;
+
+for (var i=0; i<countryData.length; i++){
+  countryIndex.push(countryData[i][0]);
+  countryName.push(countryData[i][1]);
+}
+
+// console.log(countryIndex);
+// console.log(countryName);
+
+spotifyCountries=["Andorra","Argentina","Australia","Austria","Belgium","Bolivia","Brazil","Bulgaria","Canada","Chile","Colombia","Costa Rica","Cyprus","Czech","Denmark","Dominican Republic","Ecuador","El Salvador","Estonia","Finland","France","Germany","Greece","Guatemala","Honduras","Hong Kong","Hungary","Iceland","Ireland","Italy","Latvia","Liechtenstein","Lithuania","Luxembourg","Malaysia","Malta","Mexico","Monaco","Netherlands","New Zealand","Nicaragua","Norway","Panama","Paraguay","Peru","Philippines","Poland","Portugal","Singapore","Slovakia","Spain","Sweden","Switzerland","Taiwan","Turkey","United Kingdom","Uruguay","United States"];
+
+function colorCountryId(arr){
+  var idArr=[];
+  for (var i = 0; i<arr.length; i++){
+    var country, index, id;
+    country = arr[i];
+    // console.log(country);
+    index = countryName.indexOf(country);
+    // console.log(index);
+    id = countryIndex[index];
+    idArr.push(id);
+  }
+  return idArr;
+}
+
+Ids = colorCountryId(spotifyCountries);
+console.log(Ids);
+
+albumsbycountry=["Andorra","Argentina","Australia","Austria","Belgium","Bolivia","Brazil","Bulgaria","Canada","Chile","Colombia","Costa Rica","Cyprus","Czech","Denmark","Dominican Republic","Ecuador","El Salvador","Estonia","Finland","France","Germany","Greece","Guatemala","Honduras","Hong Kong","Hungary","Iceland","Ireland","Italy","Latvia","Liechtenstein","Lithuania","Luxembourg","Malaysia","Malta","Mexico","Monaco","Netherlands","New Zealand","Nicaragua","Norway","Panama","Paraguay","Peru","Philippines","Poland","Portugal","Singapore","Slovakia","Spain","Sweden","Switzerland","Taiwan","Turkey","United Kingdom","Uruguay","United States"];
+
+//var please = fillAlbumArray(spotifyCountries);
+
+//this doesn't work
+function fillAlbumArray(arr) {
+  for (var i = 0; i<arr.length; i++){
+    console.log(arr[i]);
+    allAlbums.push({})
+    var help = countryShowData(arr[i], "#foreign");
+    allAlbums[i].country = arr[i];
+    //allAlbums[i].albumurls = GETALBUMARRAY;
+      }
+    return allAlbums;
+}
+
+
+
+var m_width = $("#map").width(),
+    width = 940,
+    height = 550,
+    country;
+
+var projection = d3.geo.mercator()
+    .scale(150)
+    .translate([width / 2, height / 1.5]);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var svg = d3.select("#map").append("svg").attr("id","mainsvg")
+    .attr("preserveAspectRatio", "xMidYMid")
+    .attr("viewBox", "0 0 " + width + " " + height)
+    .attr("width", m_width)
+    .attr("height", m_width * height / width);
+
+svg.append("rect")
+    .attr("class", "background")
+    .attr("fill","#81BEF7")
+    .attr("width", width)
+    .attr("height", height)
+    .style("stroke-opacity", 0.1)
+    .on("click", country_clicked);
+
+var g = svg.append("g");
+
+d3.json("world-50m.json", function(error, world) {
+
+  var countries = topojson.feature(world, world.objects.countries).features;
+  arr=[];
+  for (var i = 0; i<countries.length; i++){
+    arr.push(countries[i].id);
+  }
+
+
+  var lastOver = [];
+
+
+  g.selectAll("path")
+    .data(countries)
+    .enter().append("path")
+    .attr("d", path)
+    .style("fill", function(d){
+      if (Ids.indexOf(d.id)!=-1){
+        return "#00CC00";
+      }
+      else{
+        return "#2E2E2E";
+      } 
+      })
+    .style("stroke", "black")
+    .style("stroke-width", 0.2)
+    .on("click",country_clicked)
+  });
+ //#00FF00
+
+
+function zoom(xyz) {
+  g.transition()
+    .duration(750)
+    .attr("transform", "translate(" + projection.translate() + ")scale(" + xyz[2] + ")translate(-" + xyz[0] + ",-" + xyz[1] + ")")
+    .selectAll(["#countries"])
+    .style("stroke-width", 1.0 / xyz[2] + "px")
+    .selectAll(".city")
+    .attr("d", path.pointRadius(20.0 / xyz[2]));
+}
+
+function get_xyz(d) {
+  var bounds = path.bounds(d);
+  var w_scale = (bounds[1][0] - bounds[0][0]) / width;
+  var h_scale = (bounds[1][1] - bounds[0][1]) / height;
+  var z = .96 / Math.max(w_scale, h_scale);
+  var x = (bounds[1][0] + bounds[0][0]) / 2;
+  var y = (bounds[1][1] + bounds[0][1]) / 2 + (height / z / 6);
+  return [x, y, z];
+}
+
+var lastClicked = [];
+
+function country_clicked(d) {
+  if (d && country !== d) {
+
+    if (Ids.indexOf(d.id) != -1){
+      lastClicked.push(this);
+      if (lastClicked.length!=1){
+        d3.select(lastClicked[0]).style("fill","#00CC00");
+        lastClicked.shift();
+      }
+      d3.select("circle").remove(); 
+      d3.select("text").remove();
+      var xyz = get_xyz(d);
+      country = d;
+
+      var nameText = countryName[countryIndex.indexOf(d.id)];
+
+
+      d3.select(this).style("fill","#00FF00");
+      zoom(xyz);
+
+      //Appending circle after clicking
+
+      $("#foreign").remove();
+      $("#squares").remove();
+      $("#title").remove();
+      $('.nodes').remove();
+
+      svg.append("foreignObject")
+      .attr("id", "title")
+      .attr("x", width/2-115)
+      .attr("y", 7)
+      .attr("width", 230)
+      .attr("height", 40)
+      .append("xhtml:div")
+      .attr("width", 230)
+      .attr("height", 40)
+      .attr("id", "title");
+
+      svg.append("text").text(nameText).attr("x", width/2).attr("y", 38).attr("fill", "black").style("font-size", "30px").style("text-anchor","middle");
+
+      svg.append("foreignObject")
+      .attr("id", "foreign")
+      .attr("width", 1200)
+      .attr("height", 1000)
+      .append("xhtml:div")
+      .attr("width", 1200)
+      .attr("height", 1000)
+      .attr("id", "foreign");
+
+      albumarray = countryShowData(nameText, "#foreign");
+    }
+
+    
+
+  }
+    else {
+    d3.select("rect").style("fill","#81BEF7");
+    var xyz = [width / 2, height / 1.5, 1];
+    country = null;
+    zoom(xyz);
+    d3.select("text").remove();
+    $("#foreign").remove();
+    $("#squares").remove();
+    $("#title").remove();
+    $('.nodes').remove();
+  }
+}
+
+
+
+
+$(window).resize(function() {
+  var w = $("#map").width();
+  svg.attr("width", w);
+  svg.attr("height", w * height / width);
+});
+
+
+</script>
+
+</body>
+</html>
